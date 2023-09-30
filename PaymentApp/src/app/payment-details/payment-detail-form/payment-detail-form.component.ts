@@ -19,8 +19,16 @@ export class PaymentDetailFormComponent {
     this.paymentDetailService.formSubmitted = true;
     if(form.valid)
     {
-      this.paymentDetailService.postPaymentDetails()
-      .subscribe({
+      if(this.paymentDetailService.formData.paymentDetailId == 0)
+        this.insertRecord(form);
+      else
+        this.updateRecord(form);
+    }
+  }
+
+  insertRecord(form : NgForm){
+    this.paymentDetailService.postPaymentDetails()
+     .subscribe({
         next: res => {
           this.paymentDetailService.list = res as PaymentDetail[];
           this.paymentDetailService.resetForm(form);
@@ -35,6 +43,24 @@ export class PaymentDetailFormComponent {
           console.log(err);
         }
       });
-    }
+  }
+
+  updateRecord(form : NgForm){
+    this.paymentDetailService.putPaymentDetails()
+    .subscribe({
+       next: res => {
+         this.paymentDetailService.list = res as PaymentDetail[];
+         this.paymentDetailService.resetForm(form);
+         Swal.fire({
+           title: 'Updated successfully',
+           icon: 'success',
+           timer: 1000,
+           showConfirmButton:false
+         });
+       },
+       error: err => {
+         console.log(err);
+       }
+     });
   }
 }
